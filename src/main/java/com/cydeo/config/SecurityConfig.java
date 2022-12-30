@@ -37,6 +37,12 @@ public class SecurityConfig {
 
         return http
                 .authorizeRequests() //every page needs to be authorized
+                .antMatchers("/user/**").hasRole("ADMIN")
+                .antMatchers("/project/**").hasRole("MANAGER")
+                .antMatchers("/task/employees/**").hasRole("EMPLOYEE")
+                .antMatchers("/task/**").hasRole("MANAGER")
+//                .antMatchers("/task/**").hasAnyRole("EMPLOYEE", "ADMIN")  more than one role
+//                .antMatchers("/task/**").hasAuthority("ROLE_EMPLOYEE") // we need to put _ if we use hasAuthority
                 .antMatchers( //no authentication for below
                         "/",
                         "/login",
@@ -46,7 +52,12 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().authenticated()//rest needs to be authenticated
                 .and()
-                .httpBasic()//pop up page/form will remove later, and we use our login page
+//                .httpBasic()//pop up page/form will remove later, and we use our login page
+                .formLogin()
+                .loginPage("/login") //the form that we want to use
+                .defaultSuccessUrl("/welcome") //after successfully login
+                .failureUrl("/login?error=true")
+                .permitAll()//login page needs to be accessible to anyone
                 .and().build();
 
     }
