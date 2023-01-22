@@ -12,6 +12,7 @@ import com.cydeo.service.ProjectService;
 import com.cydeo.service.TaskService;
 import com.cydeo.service.UserService;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -97,7 +98,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectDTO> listAllProjectDetails() {
 
-        UserDTO currentUserDTO = userService.findByUserName("harold@manager.com");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+//        UserDTO currentUserDTO = userService.findByUserName("harold@manager.com"); //hardcoded before
+        UserDTO currentUserDTO = userService.findByUserName(username); // whoever logins the app will only see their projects
         User user = userMapper.convertToEntity(currentUserDTO);
 
         List<Project> list = projectRepository.findAllByAssignedManager(user);
